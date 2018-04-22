@@ -1,0 +1,3 @@
+- name: 'Get local key'
+  set_fact:
+    local_ssh_key_content: '{{ lookup("file", local_key_path) }}'

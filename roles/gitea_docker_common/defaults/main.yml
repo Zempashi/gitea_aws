@@ -1,0 +1,4 @@
+debug: False
+
+gitea_image: gitea/gitea
+gitea_version: 1.4

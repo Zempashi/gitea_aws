@@ -1,0 +1,33 @@
+- name: 'install package to handle docker repository'
+  package:
+    name: apt-transport-https
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: 'Add docker-ce repository key'
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: 'Add docker-ce repository'
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable'
+    state: present
+
+- name: 'install docker-ce'
+  package:
+    name: docker-ce={{ docker_version }}
+    state: present
+  notify:
+    - restart docker
+
+- name: 'autostart docker on boot'
+  service:
+    name: '{{ docker_service }}'
+    enabled: True
+
+- name: 'start docker'
+  service:
+    name: '{{ docker_service }}'
+    state: started
+  register: docker_started

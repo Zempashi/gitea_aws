@@ -1,0 +1,3 @@
+debug: False
+
+gitea_db_username: gitea

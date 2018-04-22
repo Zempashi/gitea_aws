@@ -1,0 +1,41 @@
+# Work-aroud to have a proper ~/.ssh/known_hosts
+# Recent debian has line hashed and the ansible module
+# 'known-host' is not capable to auto-detect it
+- name: 'Test ssh connection (also add to ~/.ssh/known_host)'
+  command: >-
+    {%- set server_var = hostvars[item] -%}
+
+    {% if server_var.ansible_password is defined %}
+    sshpass -p {{ server_var.ansible_password }}
+    {% endif %}
+
+    ssh -oStrictHostKeyChecking=
+    {%- if auto_add_key|default() -%}
+    no
+    {%- else -%}
+    yes
+    {% endif %}
+
+    -oPreferredAuthentications=
+    {%- if server_var.ansible_password is defined -%}
+    password
+    {%- else -%}
+    publickey
+    {% endif %}
+
+    {% if server_var.ansible_port is defined %}
+    -p {{ server_var.ansible_port }}
+    {% endif %}
+
+    {{ server_var.ansible_user ~ '@' if server_var.ansible_user|default() else '' -}}
+    {{ server_var.ansible_host|default(item, True) }}
+    true
+  delegate_to: localhost
+  run_once: True
+  register: test_host_key
+  failed_when: raise_errors
+  changed_when: auto_add_key|bool
+  retries: 5
+  check_mode: False
+  until: until
+  with_items: '{{ test_ssh_hosts }}'

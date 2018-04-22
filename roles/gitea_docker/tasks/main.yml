@@ -1,0 +1,10 @@
+- name: 'start gittea container'
+  docker_container:
+    name: gitea
+    image: '{{ gitea_image }}:{{ gitea_version }}'
+    published_ports:
+      - '80:3000'
+      - '2222:22'
+    env:
+      GITEA_DB_PASSWORD: '{{ _gitea_db_password }}'
+    restart_policy: 'unless-stopped'

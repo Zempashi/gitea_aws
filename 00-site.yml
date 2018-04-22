@@ -1,0 +1,14 @@
+- hosts: localhost
+  gather_facts: True
+  roles:
+    - role: local_ssh_key
+    - role: gitea_terraform
+    - role: wait_ssh_connect
+      group_name: 'gitea'
+
+- hosts: gitea
+  roles:
+    - role: rds_password
+    - role: docker
+    - role: gitea_docker_rds
+    - role: gitea_docker

@@ -1,0 +1,68 @@
+
+- name: 'compute list of instance to parse'
+  set_fact:
+    instances: >-
+      {%- if group_name is defined -%}
+          {%- set instances = lookup( 'inventory_hostnames', [group_name]) -%}
+          {#- Seriously ? lookup return empty LIST if not found or comma separted STRING -_- -#}
+          {%- if instances -%}
+              {{ instances.split( ',' ) }}
+          {%- else -%}
+               {{ [] }}
+          {%- endif -%}
+      {%- else -%}
+          {{ play_hosts }}
+      {%- endif -%}
+
+- name: 'Wait for ssh to come back'
+  wait_for:
+    host: '{{ hostvars[item].ansible_host|default(item, True) }}'
+    port: '{{ hostvars[item].ansible_ssh_port|default(22) }}'
+    search_regex: OpenSSH
+  delegate_to: localhost
+  with_items: '{{ instances }}'
+
+- set_fact:
+    test_ssh_hosts: '{{ instances }}'
+
+- import_tasks: ssh_test_connection.yml
+  vars:
+    raise_errors: False
+    auto_add_key: False
+    until: True
+
+- debug:
+    var: test_host_key
+  run_once: True
+  when: debug|bool
+
+- set_fact:
+    test_ssh_hosts: >-
+        [ {%- for result in test_host_key.results|default([]) if result.rc != 0 -%}
+             '{{ result["item"] }}',
+          {%- endfor -%} ]
+
+- name: 'Remove if not set correctly in ~/.ssh/known_hosts'
+  known_hosts:
+    name:  '{{ hostvars[item].ansible_host|default(item, True) }}'
+    state: 'absent'
+  register: remove_host_key
+  delegate_to: localhost
+  run_once: True
+  with_items: '{{ test_ssh_hosts }}'
+
+- debug:
+    var: remove_host_key
+  run_once: True
+  when: debug|bool
+
+- import_tasks: ssh_test_connection.yml
+  vars:
+    raise_errors: 'test_host_key.rc != 0'
+    auto_add_key: True
+    until: 'test_host_key.rc == 0'
+
+- debug:
+    var: test_host_key
+  run_once: True
+  when: debug|bool

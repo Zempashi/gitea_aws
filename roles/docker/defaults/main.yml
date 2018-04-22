@@ -1,0 +1,5 @@
+debug: False
+
+docker_service: docker
+
+docker_version: 18.03.0~ce-0~debian

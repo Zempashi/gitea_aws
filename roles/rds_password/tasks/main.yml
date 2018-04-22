@@ -1,0 +1,29 @@
+- name: 'install mariadb console clients'
+  package:
+    name: mariadb-client
+    state: present
+
+- name: 'test root/credentials on dbs'
+  command: mariadb -u {{ db_username }} -h {{ gitea_mariadb.instance.endpoint }}
+  register: mariadb_test_credential
+  changed_when: False
+  check_mode: False
+  run_once: True
+  failed_when: >-
+    mariadb_test_credential is failed and
+    'access denied' not in mariadb_test_credential.stderr|lower
+  environment:
+    MYSQL_PWD: '{{ db_password }}'
+
+- name: 'update root/credentials'
+  rds:
+    command: modify
+    region: '{{ gitea_mariadb.instance.region|default("us-east-1") }}'
+    instance_name: '{{ gitea_mariadb.instance.id }}'
+    username: '{{ db_username }}'
+    password: '{{ db_password }}'
+    upgrade: True
+    apply_immediately: True
+    wait: True
+  when: mariadb_test_credential.rc > 0
+  delegate_to: localhost
