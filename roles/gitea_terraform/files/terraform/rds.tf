@@ -26,9 +26,6 @@ variable "db_password" {
   default = "temporaryPassword"
 }
 
-resource "aws_default_vpc" "default" {
-}
-
 output "rds_name" {
   value = "${aws_db_instance.gitea_maria.identifier}"
 }

@@ -1,3 +1,17 @@
+- name: 'template gitea conf'
+  template:
+    src: app.ini.j2
+    dest: '{{ gitea_local_conf }}'
+
+- name: 'install python binding for docker'
+  package:
+    name: >-
+      {%- if ansible_python.version.major == 3 -%}
+         ['python3-docker']
+      {%- else -%}
+         ['python-docker']
+      {%- endif -%}
+
 - name: 'start gittea container'
   docker_container:
     name: gitea
@@ -5,6 +19,6 @@
     published_ports:
       - '80:3000'
       - '2222:22'
-    env:
-      GITEA_DB_PASSWORD: '{{ _gitea_db_password }}'
+    volumes:
+      - '{{ gitea_local_dir }}:/data/gitea'
     restart_policy: 'unless-stopped'

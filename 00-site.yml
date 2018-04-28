@@ -1,5 +1,7 @@
 - hosts: localhost
   gather_facts: True
+  tags:
+    - spawn
   roles:
     - role: local_ssh_key
     - role: gitea_terraform
@@ -10,5 +12,6 @@
   roles:
     - role: rds_password
     - role: docker
+    - role: gitea_docker_conf_import
     - role: gitea_docker_rds
     - role: gitea_docker
