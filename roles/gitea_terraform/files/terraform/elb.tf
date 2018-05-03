@@ -1,7 +1,7 @@
 resource "aws_elb" "gitea" {
   name               = "gitea-elb"
-  availability_zones = ["${aws_instance.gitea.availability_zone}"]
   security_groups    = ["${aws_security_group.elb_gitea.id}"]
+  subnets            = ["${aws_instance.gitea.*.subnet_id}"]
 
   listener {
     instance_port     = 80
