@@ -53,8 +53,8 @@ gitea_config:
     LEVEL: 'Info'
   security:
     INSTALL_LOCK: 'true'
-    SECRET_KEY: None
-    INTERNAL_TOKEN: None
+    SECRET_KEY: '{{ gitea_secret_key }}'
+    INTERNAL_TOKEN:
   mailer:
     ENABLED: 'false'
   service:

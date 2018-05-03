@@ -1,3 +1,8 @@
+
+- assert:
+    that:
+       - 'gitea_secret_key is defined'
+
 - name: 'Export gitea_config'
   set_fact:
     gitea_config: '{{ gitea_config }}'
