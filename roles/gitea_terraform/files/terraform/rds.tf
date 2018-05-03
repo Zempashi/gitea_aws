@@ -1,12 +1,13 @@
 resource "aws_db_instance" "gitea_maria" {
-  allocated_storage    = 10
-  engine               = "mariadb"
-  engine_version       = "10.2.12"
-  instance_class       = "db.t2.micro"
-  identifier           = "gitea"
-  name                 = "gitea"
-  username             = "root"
-  password             = "${var.db_password}"
+  allocated_storage      = 10
+  engine                 = "mariadb"
+  engine_version         = "10.2.12"
+  instance_class         = "db.t2.micro"
+  identifier             = "gitea"
+  name                   = "gitea"
+  username               = "root"
+  password               = "${var.db_password}"
+  skip_final_snapshot    = true
   vpc_security_group_ids = ["${aws_security_group.allow_mysql.id}"]
 }
 
