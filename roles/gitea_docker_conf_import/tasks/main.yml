@@ -30,7 +30,7 @@
 - name: 'update gitea config'
   set_fact:
     gitea_config: >-
-      {%- for conf in _gitea_extracted_conf.results|default([]) -%}
+      {%- for conf in _gitea_extracted_conf.results|default([]) if conf.value is defined -%}
          {%- set section_dict = gitea_config.setdefault(conf.item.section, {}) -%}
          {%- set _ = section_dict.update({conf.item.key: conf.value}) -%}
       {%- endfor -%}

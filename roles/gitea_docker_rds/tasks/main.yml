@@ -18,7 +18,11 @@
       {%- else -%}
           {{ lookup('password', '/dev/null') }}
       {%- endif -%}
-  when: gitea_dn_password is undefined
+  when: gitea_db_password is undefined
+
+- debug:
+    var: gitea_db_password
+  when: debug|bool
 
 - name: 'update gitea config'
   set_fact:
@@ -45,3 +49,4 @@
     host: '%'
     name: '{{ gitea_db_username }}'
     password: '{{ gitea_config.database.PASSWD }}'
+    priv: 'gitea.*:ALL,GRANT'

@@ -34,7 +34,7 @@ gitea_config:
     HOST: 'localhost:3306'
     NAME: 'gitea'
     USER: 'root'
-    PASSWD: None
+    PASSWD:
     SSL_MODE: 'disable'
   session:
     PROVIDER_CONFIG: '/data/gitea/sessions'

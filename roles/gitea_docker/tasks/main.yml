@@ -1,3 +1,16 @@
+
+- name: 'Search for gitea stateless password'
+  set_fact:
+    gitea_db_password: >-
+      {%- set gitea_db_password_list = play_hosts|map('extract', hostvars,
+              ['gitea_config', '', 'PASSWD'])|select|list -%}
+      {%- if gitea_db_password_list|length > 0 -%}
+          {{ gitea_db_password_list|first }}
+      {%- else -%}
+          {{ lookup('password', '/dev/null') }}
+      {%- endif -%}
+  when: gitea_db_password is undefined
+
 - name: 'template gitea conf'
   template:
     src: app.ini.j2
