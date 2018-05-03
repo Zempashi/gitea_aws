@@ -15,6 +15,7 @@
   template:
     src: app.ini.j2
     dest: '{{ gitea_local_conf }}'
+  register: gitea_conf_file
 
 - name: 'install python binding for docker'
   package:
@@ -24,6 +25,10 @@
       {%- else -%}
          ['python-docker']
       {%- endif -%}
+
+- name: 'compute fact'
+  set_fact:
+    gitea_force_restart: True
 
 - name: 'start gittea container'
   docker_container:
@@ -35,3 +40,4 @@
     volumes:
       - '{{ gitea_local_dir }}:/data/gitea'
     restart_policy: 'unless-stopped'
+    restart: '{{ gitea_force_restart }}'

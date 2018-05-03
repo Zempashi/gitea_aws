@@ -7,6 +7,8 @@ gitea_local_dir: /var/lib/gitea
 
 gitea_local_conf: '{{ gitea_local_dir }}/conf/app.ini'
 
+gitea_force_restart: False
+
 gitea_config:
   default:
     APP_NAME: 'Gitea: Git with a cup of tea'
