@@ -4,7 +4,7 @@
     state: present
 
 - name: 'test root/credentials on dbs'
-  command: mariadb -u {{ db_username }} -h {{ gitea_mariadb.instance.endpoint }}
+  command: mariadb -u {{ db_username }} -h {{ gogs_mariadb.instance.endpoint }}
   register: mariadb_test_credential
   changed_when: False
   check_mode: False
@@ -18,8 +18,8 @@
 - name: 'update root/credentials'
   rds:
     command: modify
-    region: '{{ gitea_mariadb.instance.region|default("us-east-1") }}'
-    instance_name: '{{ gitea_mariadb.instance.id }}'
+    region: '{{ gogs_mariadb.instance.region|default("us-east-1") }}'
+    instance_name: '{{ gogs_mariadb.instance.id }}'
     username: '{{ db_username }}'
     password: '{{ db_password }}'
     upgrade: True

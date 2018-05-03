@@ -1,2 +1,2 @@
-# gitea_aws
-Install gitea on AWS
+# gogs_aws
+Install gogs on AWS

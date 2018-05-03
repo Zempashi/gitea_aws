@@ -1,0 +1,44 @@
+
+- name: 'Search for gogs stateless password'
+  set_fact:
+    gogs_db_password: >-
+      {%- set gogs_db_password_list = play_hosts|map('extract', hostvars,
+              ['gogs_config', '', 'PASSWD'])|select|list -%}
+      {%- if gogs_db_password_list|length > 0 -%}
+          {{ gogs_db_password_list|first }}
+      {%- else -%}
+          {{ lookup('password', '/dev/null') }}
+      {%- endif -%}
+  when: gogs_db_password is undefined
+
+- name: 'template gogs conf'
+  template:
+    src: app.ini.j2
+    dest: '{{ gogs_local_conf }}'
+  register: gogs_conf_file
+
+- name: 'compute fact'
+  set_fact:
+    gogs_force_restart: True
+  when: gogs_conf_file is changed
+
+- name: 'install python binding for docker'
+  package:
+    name: >-
+      {%- if ansible_python.version.major == 3 -%}
+         ['python3-docker']
+      {%- else -%}
+         ['python-docker']
+      {%- endif -%}
+
+- name: 'start gittea container'
+  docker_container:
+    name: gogs
+    image: '{{ gogs_image }}:{{ gogs_version }}'
+    published_ports:
+      - '80:3000'
+      - '2222:22'
+    volumes:
+      - '{{ gogs_local_dir }}:/data/gogs'
+    restart_policy: 'unless-stopped'
+    restart: '{{ gogs_force_restart }}'

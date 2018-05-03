@@ -1,4 +1,0 @@
-debug: False
-
-gitea_db_username: gitea
-gitea_db_name: gitea

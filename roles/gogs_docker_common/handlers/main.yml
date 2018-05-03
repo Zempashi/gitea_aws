@@ -1,0 +1,3 @@
+- name: 'force restart of gogs docker container'
+  set_fact:
+    gogs_force_restart: True

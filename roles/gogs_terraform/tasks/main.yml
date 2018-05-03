@@ -1,0 +1,57 @@
+
+- name: >
+    {%- set verb = dict(present='Create/Update', absent='Delete') -%}
+    {%- set state = state|default('present') -%}
+    {{ verb[state] }} gogs infrastructure
+  terraform:
+    project_path: '{{ role_path }}/files/terraform'
+    state_file: '{{ playbook_dir }}/terraform.tfstate'
+    variables:
+      local_ssh_key: '{{ local_ssh_key_content }}'
+    state: '{{ state }}'
+  register: gogs_terraform
+
+- debug: var=gogs_terraform
+
+- name: 'get rds facts'
+  rds:
+    command: facts
+    instance_name: '{{ gogs_terraform.outputs.rds_name.value|default("gogs") }}'
+    region: '{{ (gogs_terraform.outputs.rds_region|default).value|default("us-east-1") }}'
+  check_mode: False
+  register: gogs_mariadb
+  when: state == 'present'
+
+- debug: var=gogs_mariadb
+  when: debug|bool
+
+- name: 'get ec2 facts'
+  ec2_instance_facts:
+    region: '{{ (gogs_terraform.outputs.rds_region|default).value|default("us-east-1") }}'
+    instance_ids: >-
+      {{ (gogs_terraform.outputs.gogs_instance_ids|default).value|default([]) }}
+  register: gogs_ec2
+  when: state == 'present'
+
+- debug: var=gogs_ec2
+  when: debug|bool
+
+- name: 'Add ec2 instance'
+  add_host:
+    group: gogs
+    name: '{{ item.public_dns_name }}'
+    ansible_host: >-
+      {%- if item.public_dns_name -%}
+        {{ omit }}
+      {%- else -%}
+        {{ item.private_ip_address }}
+      {%- endif -%}
+    gogs_mariadb: '{{ gogs_mariadb }}'
+    ansible_user: admin
+    ansible_become: True
+    ansible_python_interpreter: python3
+  check_mode: False
+  changed_when: False
+  loop_control:
+    label: '{{ item.public_dns_name }}'
+  with_items: '{{ gogs_ec2.instances|default([]) }}'

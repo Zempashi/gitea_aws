@@ -1,0 +1,12 @@
+{% macro section(value_dict) -%}
+{% set max_length_key = value_dict.keys()|map('length')|max %}
+{% for key, value in value_dict|dictsort %}
+{{ key.ljust(max_length_key) }} = {{ value }}
+{% endfor %}
+{%- endmacro %}
+{{ section(gogs_config.pop('default', {})) -}}
+{% for section_name, value_dict in gogs_config|dictsort %}
+
+[{{ section_name }}]
+{{ section(value_dict) -}}
+{% endfor %}

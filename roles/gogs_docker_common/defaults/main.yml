@@ -1,0 +1,59 @@
+debug: False
+
+gogs_image: gogs/gogs
+gogs_version: 0.11.43
+
+gogs_local_dir: /var/lib/gogs
+
+gogs_local_conf: '{{ gogs_local_dir }}/conf/app.ini'
+
+gogs_force_restart: False
+
+gogs_config:
+  default:
+    APP_NAME: 'Gitea: Git with a cup of tea'
+    RUN_MODE: 'prod'
+    RUN_USER: 'git'
+  repository:
+    ROOT: '/data/git/repositories'
+  repository.upload:
+    TEMP_PATH: '/data/gogs/uploads'
+  server:
+    SSH_DOMAIN: 'localhost'
+    HTTP_PORT: 3000
+    ROOT_URL: 'http://localhost:3000/'
+    DISABLE_SSH: 'false'
+    SSH_PORT: 22
+    DOMAIN: 'localhost'
+    OFFLINE_MODE: 'false'
+  database:
+    PATH: '/data/gogs/gogs.db'
+    DB_TYPE: 'sqlite3'
+    HOST: 'localhost:3306'
+    NAME: 'gogs'
+    USER: 'root'
+    PASSWD:
+    SSL_MODE: 'disable'
+  session:
+    PROVIDER: 'file'
+  picture:
+    DISABLE_GRAVATAR: 'false'
+    ENABLE_FEDERATED_GRAVATAR: 'true'
+  attachment:
+    PATH: '/data/gogs/attachements'
+  log:
+    ROOT_PATH: '/data/gogs/log'
+    MODE: 'file'
+    LEVEL: 'Info'
+  security:
+    INSTALL_LOCK: 'true'
+    SECRET_KEY: '{{ gogs_secret_key }}'
+    INTERNAL_TOKEN:
+  mailer:
+    ENABLED: 'false'
+  service:
+    REGISTER_EMAIL_CONFIRM: 'false'
+    ENABLE_NOTIFY_MAIL: 'false'
+    DISABLE_REGISTRATION: 'false'
+    ENABLE_CAPTCHA: 'false'
+    REQUIRE_SIGNIN_VIEW: 'false'

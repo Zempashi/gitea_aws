@@ -1,0 +1,41 @@
+- name: 'detect gogs configuration file'
+  stat:
+    path: '{{ gogs_local_conf }}'
+  register: gogs_conf_exists
+
+- name: 'Search variable in configfile'
+  read_ini:
+    path: '{{ gogs_local_conf }}'
+    section: '{{ item.section }}'
+    option: '{{ item.key }}'
+    raise_error: False
+  with_items: '{{ config_vars }}'
+  changed_when: False
+  register: _gogs_extracted_conf
+  when: gogs_conf_exists.stat.exists
+  check_mode: False
+  vars:
+    config_vars:
+      - section: 'server'
+        key: 'LFS_JWT_SECRET'
+      - section: 'database'
+        key: 'PASSWD'
+      - section: 'security'
+        key: 'INTERNAL_TOKEN'
+
+- debug:
+    var: _gogs_extracted_conf
+  when: debug|bool
+
+- name: 'update gogs config'
+  set_fact:
+    gogs_config: >-
+      {%- for conf in _gogs_extracted_conf.results|default([]) if conf.value is defined -%}
+         {%- set section_dict = gogs_config.setdefault(conf.item.section, {}) -%}
+         {%- set _ = section_dict.update({conf.item.key: conf.value}) -%}
+      {%- endfor -%}
+      {{ gogs_config }}
+
+- debug:
+    var: gogs_config
+  when: debug|bool

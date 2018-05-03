@@ -1,3 +1,0 @@
-- name: 'force restart of gitea docker container'
-  set_fact:
-    gitea_force_restart: True

@@ -4,14 +4,14 @@
     - spawn
   roles:
     - role: local_ssh_key
-    - role: gitea_terraform
+    - role: gogs_terraform
     - role: wait_ssh_connect
-      group_name: 'gitea'
+      group_name: 'gogs'
 
-- hosts: gitea
+- hosts: gogs
   roles:
     - role: rds_password
     - role: docker
-    - role: gitea_docker_conf_import
-    - role: gitea_docker_rds
-    - role: gitea_docker
+    - role: gogs_docker_conf_import
+    - role: gogs_docker_rds
+    - role: gogs_docker

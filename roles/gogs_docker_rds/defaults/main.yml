@@ -1,0 +1,4 @@
+debug: False
+
+gogs_db_username: gogs
+gogs_db_name: gogs

@@ -1,0 +1,13 @@
+
+- assert:
+    that:
+       - 'gogs_secret_key is defined'
+
+- name: 'Export gogs_config'
+  set_fact:
+    gogs_config: '{{ gogs_config }}'
+
+- name: 'create local conf dir'
+  file:
+    dest: '{{ gogs_local_conf | dirname }}'
+    state: directory
