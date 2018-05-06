@@ -14,4 +14,6 @@
     - role: docker
     - role: gogs_docker_conf_import
     - role: gogs_docker_rds
+    - role: gogs_docker_proxy_nginx
     - role: gogs_docker
+    - role: nginx

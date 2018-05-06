@@ -9,6 +9,8 @@ gogs_local_conf: '{{ gogs_local_dir }}/conf/app.ini'
 
 gogs_force_restart: False
 
+gogs_exported_port: '80'
+
 gogs_config:
   default:
     APP_NAME: 'Gitea: Git with a cup of tea'

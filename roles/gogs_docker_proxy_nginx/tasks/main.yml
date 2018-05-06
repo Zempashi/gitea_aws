@@ -1,0 +1,13 @@
+
+- name: 'template nginx.conf'
+  template:
+    src: gogs_nginx.conf.j2
+    dest: '{{ gogs_proxy_conf }}'
+  notify:
+    - restart nginx
+
+- name: 'exporting variables for other roles'
+  set_fact:
+    gogs_exported_port: '127.0.0.1:3000'
+    nginx_expected_config_files: >-
+      {{ nginx_expected_config_files + [gogs_proxy_conf] }}

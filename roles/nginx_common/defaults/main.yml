@@ -1,0 +1,4 @@
+
+nginx_conf_dir: '/etc/nginx/conf.d/'
+nginx_default_dir: '/etc/nginx/site-default.d'
+nginx_expected_config_files: []

@@ -1,0 +1,34 @@
+- name: 'template default site'
+  template:
+    src: site-default.j2
+    dest: '/etc/nginx/sites-available/default'
+  notify:
+    - restart nginx
+
+- name: 'list files under nginx/conf.d directory'
+  find:
+    recurse: no
+    paths: '{{ nginx_conf_dir }}'
+  register: nginx_current_conf_files
+
+- name: 'list files under nginx/default.d directory'
+  find:
+    recurse: no
+    paths: '{{ nginx_default_dir }}'
+  register: nginx_current_default_files
+
+- name: 'list expected_files'
+  debug:
+    var: nginx_expected_config_files
+  when: debug|bool
+
+- name: 'remove undeed nginx config files'
+  file:
+    name: '{{ item }}'
+    state: absent
+  with_items: >-
+    {{ (nginx_current_conf_files.files|map(attribute='path')
+        |union(nginx_current_default_files.files|map(attribute='path'))
+       )|difference(nginx_expected_config_files) }}
+  notify:
+    - restart nginx

@@ -1,0 +1,3 @@
+gogs_conf_name: 'gogs'
+
+gogs_proxy_conf: '{{ nginx_default_dir }}/{{ gogs_conf_name }}.conf'

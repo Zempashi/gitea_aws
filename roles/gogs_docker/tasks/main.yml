@@ -36,7 +36,7 @@
     name: gogs
     image: '{{ gogs_image }}:{{ gogs_version }}'
     published_ports:
-      - '80:3000'
+      - '{{ gogs_exported_port }}:3000'
       - '2222:22'
     volumes:
       - '{{ gogs_local_dir }}:/data/gogs'
