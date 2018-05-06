@@ -1,4 +1,17 @@
 
+- name: 'create empty terraform.state'
+  command: touch {{ playbook_dir }}/terraform.tfstate
+  args:
+    creates: '{{ playbook_dir }}/terraform.tfstate'
+    warn: False
+  delegate_to: localhost
+
+- name: 'init terraform'
+  command: terraform init
+  args:
+    chdir: '{{ role_path }}/files/terraform'
+    creates: '{{ role_path }}/files/terraform/.terraform'
+
 - name: >
     {%- set verb = dict(present='Create/Update', absent='Delete') -%}
     {%- set state = state|default('present') -%}
