@@ -1,5 +1,4 @@
 - hosts: localhost
-  gather_facts: True
   tags:
     - spawn
   roles:
@@ -12,9 +11,14 @@
   roles:
     - role: rds_password
     - role: docker
+    - role: gogs_ssh_host_keys
     - role: gogs_docker_conf_import
     - role: gogs_docker_rds
     - role: gogs_letsencrypt
     - role: gogs_docker_proxy_nginx
+
+- hosts: gogs
+  gather_facts: False
+  roles:
     - role: gogs_docker
     - role: nginx

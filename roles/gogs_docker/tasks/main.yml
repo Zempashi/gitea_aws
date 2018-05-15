@@ -39,6 +39,6 @@
       - '{{ gogs_exported_port }}:3000'
       - '2222:22'
     volumes:
-      - '{{ gogs_local_dir }}:/data/gogs'
+      - '{{ gogs_local_dir }}:/data'
     restart_policy: 'unless-stopped'
     restart: '{{ gogs_force_restart }}'

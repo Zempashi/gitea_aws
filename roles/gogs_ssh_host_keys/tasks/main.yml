@@ -1,0 +1,34 @@
+
+- name: 'create ssh dir'
+  file:
+    name: '{{ gogs_local_dir }}/ssh/'
+    state: directory
+
+- name: 'copy ssh_host_key'
+  copy:
+    content: |
+      {{ hostvars[inventory_hostname][item] }}
+    dest: '{{ gogs_local_dir }}/ssh/{{ item }}'
+    owner: root
+    group: root
+    mode: 0600
+  with_items: '{{ ssh_host_keys }}'
+  notify:
+   - force restart of gogs docker container
+
+- name: 'compute ssh host public'
+  command: ssh-keygen -y -f {{ gogs_local_dir }}/ssh/{{ item }}
+  changed_when: False
+  check_mode: False
+  with_items: '{{ ssh_host_keys }}'
+  register: ssh_host_public
+
+- name: 'write ssh host public'
+  copy:
+    content: '{{ item.stdout }}'
+    dest: '{{ gogs_local_dir }}/ssh/{{ item.item }}.pub'
+  loop_control:
+    label: "{{ item.item }}"
+  with_items: '{{ ssh_host_public.results|default([]) }}'
+  notify:
+    - force restart of gogs docker container
