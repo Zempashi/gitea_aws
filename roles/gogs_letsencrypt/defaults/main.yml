@@ -1,0 +1,9 @@
+debug: False
+
+gogs_acme_dir: /var/lib/gogs/acme/
+
+acme_url:
+    staging: acme-staging.api.letsencrypt.org
+    prod: acme-v01.api.letsencrypt.org
+
+acme_class: staging

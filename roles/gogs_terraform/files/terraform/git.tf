@@ -2,7 +2,7 @@ data "aws_ami" "debian_stretch" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["debian-stretch-hvm-x86_64-gp2-*"]
+    values = ["debian-stretch-hvm-x86_64-gp2-2018-05-14-16107"]
   }
   filter {
     name   = "virtualization-type"
@@ -18,7 +18,13 @@ resource "aws_instance" "gogs" {
     Name = "gogs"
   }
   key_name = "${aws_key_pair.local_ssh_key.key_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.letsencrypt.name}"
   security_groups = ["${aws_security_group.allow_ssh_git_http.name}"]
+}
+
+resource "aws_iam_instance_profile" "letsencrypt" {
+  name = "letsencrypt"
+  role = "${aws_iam_role.letsencrypt.name}"
 }
 
 resource "aws_security_group" "allow_ssh_git_http" {

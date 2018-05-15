@@ -25,6 +25,10 @@ resource "aws_elb" "gogs" {
     ssl_certificate_id = "${aws_iam_server_certificate.snakeoil.arn}"
   }
 
+  lifecycle {
+      ignore_changes = ["ssl_certificate_id"]
+  }
+
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
@@ -81,4 +85,8 @@ resource "aws_iam_server_certificate" "snakeoil" {
   certificate_body = "${file("cert_snakeoil/ssl-cert-snakeoil.pem")}"
   private_key      = "${file("cert_snakeoil/ssl-cert-snakeoil.key")}"
 
+}
+
+output "gogs_elb_name" {
+  value = "${aws_elb.gogs.name}"
 }

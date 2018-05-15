@@ -1,0 +1,4 @@
+location /.well-known/acme-challenge {
+    root   {{ gogs_acme_dir }};
+    try_files $uri $uri/ =404;
+}

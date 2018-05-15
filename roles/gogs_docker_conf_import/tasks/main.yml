@@ -16,8 +16,6 @@
   check_mode: False
   vars:
     config_vars:
-      - section: 'server'
-        key: 'LFS_JWT_SECRET'
       - section: 'database'
         key: 'PASSWD'
       - section: 'security'

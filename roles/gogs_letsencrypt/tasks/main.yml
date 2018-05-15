@@ -1,0 +1,77 @@
+- name: 'create webroot dir for letsencrypt'
+  file:
+    name: '{{ gogs_acme_dir }}'
+    state: directory
+
+- name: 'keep letencrypt nginx conf'
+  set_fact:
+    nginx_expected_config_files: >-
+      {{ nginx_expected_config_files + [letsencrypt_filename] }}
+    letsencrypt_filename: '{{ letsencrypt_filename }}'
+  vars:
+    letsencrypt_filename: '{{ nginx_default_dir }}/00-letsencrypt.conf'
+
+- name: 'install nginx conf'
+  template:
+    src: letsencrypt.conf.j2
+    dest: '{{ letsencrypt_filename }}'
+  notify:
+    - restart nginx
+
+- name: 'install certbot'
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - certbot
+    - python3-boto3
+
+- name: 'create hook dir'
+  file:
+    dest: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+
+- name: 'copy elb deploy hook'
+  copy:
+    src: letsencrypt_elb.py
+    dest: /etc/letsencrypt/renewal-hooks/deploy/letsencrypt_elb.py
+    mode: 0700
+
+- name: 'enable certbot cron'
+  service:
+    name: certbot.timer
+    enabled: True
+
+- name: 'patch certbot systemd'
+  file:
+    name: '/etc/systemd/system/certbot.service.d'
+    state: 'directory'
+
+- name: 'Add environment variable for ELB deployement'
+  template:
+    src: systemd.patch.conf.j2
+    dest: '/etc/systemd/system/certbot.service.d/elb.conf'
+  notify:
+    - daemon-reload systemd
+
+- name: 'list account files'
+  find:
+    name: >-
+      /etc/letsencrypt/accounts/{{ acme_url[acme_class] }}/directory/
+    patterns: 'regr.json'
+    recurse: True
+  register: letsencrypt_accounts
+  run_once: True
+
+- debug:
+    var: letsencrypt_accounts
+  when: debug|bool
+
+- name: 'letsencrypt (create account)'
+  command: >-
+    certbot register -m {{ letsencrypt_email }} --agree-tos
+    {% if acme_class == 'staging' %}
+    --staging
+    {% endif %}
+  when: letsencrypt_accounts.files|length == 0
+  run_once: True

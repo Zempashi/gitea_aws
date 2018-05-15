@@ -1,4 +1,3 @@
-
 - name: 'template nginx.conf'
   template:
     src: gogs_nginx.conf.j2
