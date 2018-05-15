@@ -75,3 +75,18 @@
     {% endif %}
   when: letsencrypt_accounts.files|length == 0
   run_once: True
+
+- name: 'create letsencrypt bootstrap script'
+  copy:
+    dest: letsencrypt_init.sh
+    content: |
+      #! /bin/bash
+      export ELB_NAME=gogs-elb
+      export RENEWED_DOMAINS=git.ligi.fr
+      export DEP_HOOK=/etc/letsencrypt/renewal-hooks/deploy/letsencrypt_elb.py
+
+      certbot certonly --webroot -w /var/lib/gogs/acme \
+      {% if acme_class == 'staging' %}--staging{% endif %} -d ${RENEWED_DOMAINS} \
+      --renew-hook ${DEP_HOOK}
+      ${DEP_HOOK}
+    mode: 0755
