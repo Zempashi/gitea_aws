@@ -9,8 +9,8 @@
     content: |
       {{ hostvars[inventory_hostname][item] }}
     dest: '{{ gogs_local_dir }}/ssh/{{ item }}'
-    owner: root
-    group: root
+    owner: 1000
+    group: 1000
     mode: 0600
   with_items: '{{ ssh_host_keys }}'
   notify:
