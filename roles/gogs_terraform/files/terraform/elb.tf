@@ -26,7 +26,7 @@ resource "aws_elb" "gogs" {
   }
 
   lifecycle {
-      ignore_changes = ["ssl_certificate_id"]
+      ignore_changes = ["listener"]
   }
 
   health_check {
