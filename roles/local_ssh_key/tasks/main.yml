@@ -1,3 +1,8 @@
-- name: 'Get local key'
+- name: "Search local key"
   set_fact:
-    local_ssh_key_content: '{{ lookup("file", local_key_path) }}'
+    ssh_key_path: '{{ item }}'
+  with_first_found: '{{ ssh_key_path is undefined|ternary(ssh_key_path_search, [ssh_key_path]) }}'
+
+- debug:
+    var: ssh_key_path
+  when: debug|bool

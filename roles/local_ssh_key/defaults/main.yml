@@ -1,1 +1,6 @@
-local_key_path: '~/.ssh/id_rsa.pub'
+debug: False
+
+ssh_key_path_search:
+    - ~/.ssh/id_rsa.pub
+    - ~/.ssh/id_ecdsa.pub
+    - ~/.ssh/id_dsa.pub

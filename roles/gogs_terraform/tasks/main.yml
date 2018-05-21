@@ -20,7 +20,7 @@
     project_path: '{{ role_path }}/files/terraform'
     state_file: '{{ playbook_dir }}/terraform.tfstate'
     variables:
-      local_ssh_key: '{{ local_ssh_key_content }}'
+      ssh_key_path: '{{ ssh_key_path }}'
     state: '{{ state }}'
   register: gogs_terraform
 
@@ -61,6 +61,7 @@
       {%- endif -%}
     gogs_mariadb: '{{ gogs_mariadb }}'
     gogs_elb_name: '{{ (gogs_terraform.outputs.gogs_elb_name|default).value|default(omit) }}'
+    gogs_ebs: '{{ (gogs_terraform.outputs.gogs_ebs|default).value|default(omit) }}'
     ansible_user: admin
     ansible_become: True
     ansible_python_interpreter: python3

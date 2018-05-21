@@ -1,3 +1,7 @@
+output "gogs_elb_name" {
+  value = "${aws_elb.gogs.name}"
+}
+
 resource "aws_elb" "gogs" {
   name               = "gogs-elb"
   security_groups    = ["${aws_security_group.elb_gogs.id}"]
@@ -85,8 +89,4 @@ resource "aws_iam_server_certificate" "snakeoil" {
   certificate_body = "${file("cert_snakeoil/ssl-cert-snakeoil.pem")}"
   private_key      = "${file("cert_snakeoil/ssl-cert-snakeoil.key")}"
 
-}
-
-output "gogs_elb_name" {
-  value = "${aws_elb.gogs.name}"
 }

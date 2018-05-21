@@ -44,3 +44,8 @@ resource "aws_iam_role" "letsencrypt" {
 }
 EOF
 }
+
+resource "aws_iam_instance_profile" "letsencrypt" {
+  name = "letsencrypt"
+  role = "${aws_iam_role.letsencrypt.name}"
+}
