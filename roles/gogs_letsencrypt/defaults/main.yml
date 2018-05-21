@@ -2,8 +2,9 @@ debug: False
 
 gogs_acme_dir: /var/lib/gogs/acme/
 
-acme_url:
-    staging: acme-staging.api.letsencrypt.org
-    prod: acme-v01.api.letsencrypt.org
+acme_staging_url: acme-staging.api.letsencrypt.org
+acme_prod_url: acme-v01.api.letsencrypt.org
 
-acme_class: staging
+acme_staging: False
+
+acme_url: '{{ acme_staging|ternary(acme_staging_url, acme_prod_url) }}'

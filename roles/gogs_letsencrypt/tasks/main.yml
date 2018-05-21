@@ -57,7 +57,7 @@
 - name: 'list account files'
   find:
     name: >-
-      /etc/letsencrypt/accounts/{{ acme_url[acme_class] }}/directory/
+      /etc/letsencrypt/accounts/{{ acme_url }}/directory/
     patterns: 'regr.json'
     recurse: True
   register: letsencrypt_accounts
@@ -70,9 +70,7 @@
 - name: 'letsencrypt (create account)'
   command: >-
     certbot register -m {{ letsencrypt_email }} --agree-tos
-    {% if acme_class == 'staging' %}
-    --staging
-    {% endif %}
+    {% if acme_staging %}--staging{% endif %}
   when: letsencrypt_accounts.files|length == 0
   run_once: True
 
@@ -83,10 +81,8 @@
       #! /bin/bash
       export ELB_NAME=gogs-elb
       export RENEWED_DOMAINS=git.ligi.fr
-      export DEP_HOOK=/etc/letsencrypt/renewal-hooks/deploy/letsencrypt_elb.py
 
       certbot certonly --webroot -w /var/lib/gogs/acme \
-      {% if acme_class == 'staging' %}--staging{% endif %} -d ${RENEWED_DOMAINS} \
-      --renew-hook ${DEP_HOOK}
-      ${DEP_HOOK}
+      {% if acme_staging %}--staging{% endif %} -d ${RENEWED_DOMAINS} \
+      --renew-hook /etc/letsencrypt/renewal-hooks/deploy/letsencrypt_elb.py
     mode: 0755

@@ -1,4 +1,6 @@
-location /.well-known/acme-challenge {
+location /.well-known {
     root   {{ gogs_acme_dir }};
+    autoindex on;
     try_files $uri $uri/ =404;
+    break;
 }
