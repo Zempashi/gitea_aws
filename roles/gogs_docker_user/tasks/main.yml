@@ -1,0 +1,29 @@
+- name: 'assertion'
+  assert:
+    that:
+      - "gogs_users is defined"
+
+- name: "Create gogs users"
+  command: >-
+    docker exec -u git -e USER=git gogs
+    /app/gogs/gogs admin create-user
+    --name {{ item.username }}
+    --email {{ item.email }}
+    {% if item.admin|bool %}--admin{% endif %}
+    --password ${PASSWORD}
+  register: user_creation
+  changed_when: not 'user already exists' in user_creation.stderr
+  failed_when: >-
+    user_creation is failed and
+    not 'user already exists' in user_creation.stderr
+  environment:
+    PASSWORD: '{{ item.password }}'
+  with_items: '{{ _gogs_users }}'
+  loop_control:
+    label: '{{ item.username }}'
+  vars:
+    _gogs_users: >-
+      [{%- for username, user in gogs_users.items() -%}
+        {%- set _ =  user.update({'username': username}) -%}
+        {{ user }},
+      {%- endfor -%}]
