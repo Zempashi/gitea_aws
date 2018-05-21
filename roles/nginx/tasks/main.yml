@@ -17,7 +17,7 @@
     paths: '{{ nginx_default_dir }}'
   register: nginx_current_default_files
 
-- name: 'list expected_files'
+- name: 'display expected_files'
   debug:
     var: nginx_expected_config_files
   when: debug|bool

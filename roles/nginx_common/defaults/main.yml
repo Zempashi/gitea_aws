@@ -1,3 +1,4 @@
+debug: False
 
 nginx_conf_dir: '/etc/nginx/conf.d/'
 nginx_default_dir: '/etc/nginx/site-default.d'
