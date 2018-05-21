@@ -51,11 +51,15 @@ resource "aws_instance" "gogs" {
 }
 
 resource "aws_ebs_volume" "gogs" {
-    availability_zone = "${aws_instance.gogs.availability_zone}"
-    size = 20
-    tags {
-        Name = "gogs"
-    }
+  availability_zone = "${aws_instance.gogs.availability_zone}"
+  size = 20
+  tags {
+    Name = "gogs"
+  }
+
+  lifecycle {
+    prevent_destroy = "true"
+  }
 }
 
 resource "aws_volume_attachment" "gogs_attachement" {
