@@ -1,0 +1,3 @@
+debug: False
+
+default_fstype: ext4

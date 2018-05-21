@@ -1,0 +1,55 @@
+- name: 'assertion'
+  assert:
+    that:
+      - "mount_disks is defined"
+      - "mount_disks is mapping"
+
+- name: "list all disks"
+  find:
+    paths: '/dev/'
+    patterns:
+      - 'sd*'
+      - 'xvd*'
+    file_type: 'any'
+  register: devices
+
+- debug: var=devices
+  when: debug|bool
+
+- name: 'find real disk'
+  set_fact:
+    real_devices: >-
+      { {%- for device in devices.files|map(attribute='path') -%}
+          {%- set denominator = device|regex_replace('^/dev/\w+(d\w+)$', '\g<1>') -%}
+          {%- if denominator in disks -%}
+            "{{ disks[denominator] }}": "{{ device }}",
+          {% endif -%}
+      {%- endfor -%} }
+  vars:
+    disks: >-
+      { {%- for block in mount_disks -%}
+        "{{ block|regex_replace('^/dev/\w+(d\w+)$', '\g<1>') }}": "{{ block }}",
+      {%- endfor -%} }
+
+- debug: var=real_devices
+  when: debug|bool
+
+- name: 'create filsystem'
+  filesystem:
+    dev: '{{ real_devices[item.key] }}'
+    fstype: '{{ item.value.fstype|default(default_fstype) }}'
+  loop_control:
+    label: >-
+      [ '{{ real_devices[item.key] }}', '{{ item.value.fstype|default(default_fstype) }}']
+  with_dict: '{{ mount_disks }}'
+
+- name: 'mount filesystem'
+  mount:
+    src: '{{ real_devices[item.key] }}'
+    path: '{{ item.value.mountpoint }}'
+    fstype: '{{ item.value.fstype|default(default_fstype) }}'
+    state: 'mounted'
+  loop_control:
+    label: >-
+      ['{{ real_devices[item.key] }}', '{{ item.value.mountpoint }}']
+  with_dict: '{{ mount_disks }}'
