@@ -4,6 +4,9 @@
       - "mount_disks is defined"
       - "mount_disks is mapping"
 
+- debug: var=mount_disks
+  when: debug|bool
+
 - name: "list all disks"
   find:
     paths: '/dev/'

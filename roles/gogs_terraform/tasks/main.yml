@@ -61,7 +61,7 @@
       {%- endif -%}
     gogs_mariadb: '{{ gogs_mariadb }}'
     gogs_elb_name: '{{ (gogs_terraform.outputs.gogs_elb_name|default).value|default(omit) }}'
-    gogs_ebs: '{{ (gogs_terraform.outputs.gogs_ebs|default).value|default(omit) }}'
+    gogs_ebs: '{{ (gogs_terraform.outputs.gogs_ebs|default).value|first }}'
     ansible_user: admin
     ansible_become: True
     ansible_python_interpreter: python3

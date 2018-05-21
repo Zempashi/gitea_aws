@@ -15,10 +15,7 @@
 - hosts: gogs
   gather_facts: False
   roles:
-    - role: ebs_attach_ec2
-      vars:
-        mount_disks:
-          /dev/sdf: {'mountpoint': '/var/lib/gogs'}
+    - role: gogs_mount_elb
     - role: gogs_ssh_host_keys
     - role: gogs_docker_conf_import
     - role: gogs_docker_rds
