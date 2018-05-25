@@ -1,6 +1,6 @@
 dependencies:
-    - role: gogs_docker_common
     - role: ebs_attach_ec2
       vars:
         mount_disks: >-
           {{ {gogs_ebs: dict(mountpoint=gogs_local_dir)} }}
+    - role: gogs_docker_common
