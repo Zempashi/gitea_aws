@@ -42,3 +42,11 @@
       - '{{ gogs_local_dir }}:/data'
     restart_policy: 'unless-stopped'
     restart: '{{ gogs_force_restart }}'
+
+- name: 'Get home page (install DB)'
+  uri:
+    url: http://{{ gogs_exported_port }}
+  changed_when: False
+  register: gogs_homepage
+  until: gogs_homepage is success
+  retries: 5

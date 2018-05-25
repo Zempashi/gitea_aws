@@ -22,9 +22,6 @@
     - role: gogs_docker_rds
     - role: gogs_letsencrypt
     - role: gogs_docker_proxy_nginx
-
-- hosts: gogs
-  gather_facts: False
-  roles:
     - role: gogs_docker
+    - role: gogs_docker_user
     - role: nginx
