@@ -1,11 +1,4 @@
 
-- name: 'create empty terraform.state'
-  command: touch {{ playbook_dir }}/terraform.tfstate
-  args:
-    creates: '{{ playbook_dir }}/terraform.tfstate'
-    warn: False
-  delegate_to: localhost
-
 - name: 'init terraform'
   command: terraform init
   args:
@@ -18,13 +11,20 @@
     {{ verb[state] }} gogs infrastructure
   terraform:
     project_path: '{{ role_path }}/files/terraform'
-    state_file: '{{ playbook_dir }}/terraform.tfstate'
+    state_file: '{{ tfstate_file|default(omit) }}'
     variables:
       ssh_key_path: '{{ ssh_key_path }}'
     state: '{{ state }}'
   register: gogs_terraform
 
 - debug: var=gogs_terraform
+
+- name: 'Make to ease access to the state file'
+  file:
+    src: '{{ tfstate_file|default(role_path ~ "/files/terraform/terraform.tfstate") }}'
+    dest: '{{ tfstate_link }}'
+    state: link
+  when: tfstate_file is undefined
 
 - name: 'get rds facts'
   rds:

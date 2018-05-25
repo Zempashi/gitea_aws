@@ -88,5 +88,4 @@ resource "aws_iam_server_certificate" "snakeoil" {
   name             = "snakeoil"
   certificate_body = "${file("cert_snakeoil/ssl-cert-snakeoil.pem")}"
   private_key      = "${file("cert_snakeoil/ssl-cert-snakeoil.key")}"
-
 }

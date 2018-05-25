@@ -1,3 +1,5 @@
 debug: False
 
 state: present
+
+tfstate_link: '{{ playbook_dir }}/terraform.tfstate'

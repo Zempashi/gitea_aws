@@ -40,30 +40,28 @@ resource "aws_security_group" "allow_ssh_git_http" {
 }
 
 resource "aws_instance" "gogs" {
-  ami           = "${data.aws_ami.debian_stretch.id}"
-  instance_type = "t2.micro"
+  ami                  = "${data.aws_ami.debian_stretch.id}"
+  instance_type        = "t2.micro"
+  key_name             = "${aws_key_pair.local_ssh_key.key_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.letsencrypt.name}"
+  security_groups      = ["${aws_security_group.allow_ssh_git_http.name}"]
+  availability_zone    = "${data.aws_ebs_volume.gogs.availability_zone}"
+
   tags {
     Name = "gogs"
   }
-  key_name = "${aws_key_pair.local_ssh_key.key_name}"
-  iam_instance_profile = "${aws_iam_instance_profile.letsencrypt.name}"
-  security_groups = ["${aws_security_group.allow_ssh_git_http.name}"]
+
 }
 
-resource "aws_ebs_volume" "gogs" {
-  availability_zone = "${aws_instance.gogs.availability_zone}"
-  size = 20
-  tags {
-    Name = "gogs"
-  }
-
-  lifecycle {
-    prevent_destroy = "true"
+data "aws_ebs_volume" "gogs" {
+  filter {
+    name   = "tag:Name"
+    values = ["gogs"]
   }
 }
 
 resource "aws_volume_attachment" "gogs_attachement" {
   device_name = "/dev/sdf"
-  volume_id   = "${aws_ebs_volume.gogs.id}"
+  volume_id   = "${data.aws_ebs_volume.gogs.id}"
   instance_id = "${aws_instance.gogs.id}"
 }

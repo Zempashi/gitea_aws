@@ -3,6 +3,7 @@
     - spawn
   roles:
     - role: local_ssh_key
+    - role: gogs_terraform_locked
     - role: gogs_terraform
     - role: wait_ssh_connect
       group_name: 'gogs'

@@ -1,0 +1,23 @@
+
+- name: 'init terraform'
+  command: terraform init
+  args:
+    chdir: '{{ role_path }}/files/terraform'
+    creates: '{{ role_path }}/files/terraform/.terraform'
+
+- name: 'Create gogs locked infrastructure'
+  terraform:
+    project_path: '{{ role_path }}/files/terraform'
+    state_file: '{{ tfstate_file|default(omit) }}'
+    state: present
+  register: locked_gogs_terraform
+  when: state == "present"
+
+- name: 'Make to ease access to the state file'
+  file:
+    src: '{{ tfstate_file|default(role_path ~ "/files/terraform/terraform.tfstate") }}'
+    dest: '{{ tfstate_link }}'
+    state: link
+  when: tfstate_file is undefined
+
+- debug: var=locked_gogs_terraform
