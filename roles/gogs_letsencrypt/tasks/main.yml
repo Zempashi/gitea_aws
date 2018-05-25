@@ -1,6 +1,6 @@
 - name: 'create webroot dir for letsencrypt'
   file:
-    name: '{{ gogs_acme_dir }}'
+    name: '{{ gogs_acme_dir }}/.well-known'
     state: directory
 
 - name: 'keep letencrypt nginx conf'
