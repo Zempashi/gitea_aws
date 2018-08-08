@@ -84,8 +84,9 @@ class LetsencryptELB:
         name = host
         if 'fake' in issuer_name.lower():
             name += '+staging'
-        return "{name}-{expiration}-{serial}".format(
+        return "{name}-{start}-{expiration}-{serial}".format(
             name=name,
+            start=cert.not_valid_before.date(),
             expiration=cert.not_valid_after.date(),
             serial=cert.serial,
         )[:128]
@@ -96,7 +97,7 @@ class LetsencryptELB:
             ServerCertificateName=self.generate_certificate_name(host, pem_certificate),
             PrivateKey=pem_private_key,
             CertificateBody=pem_certificate,
-            # CertificateChain=pem_certificate_chain,
+            CertificateChain=pem_certificate_chain,
         )
         new_cert_arn = response["ServerCertificateMetadata"]["Arn"]
 
