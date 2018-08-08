@@ -5,7 +5,15 @@
 
 - name: 'Export gogs_config'
   set_fact:
-    gogs_config: '{{ gogs_config }}'
+    gogs_config: >-
+      {%- if gogs_domain is defined -%}
+        {%- set _ = gogs_config['server'].update({
+            'DOMAIN': gogs_domain,
+            'SSH_DOMAIN': gogs_ssh_domain|default(gogs_domain),
+            'ROOT_URL': 'https://' ~ gogs_domain ~ '/'
+        }) -%}
+      {%- endif -%}
+      {{ gogs_config }}
 
 - name: 'create local conf dir'
   file:
