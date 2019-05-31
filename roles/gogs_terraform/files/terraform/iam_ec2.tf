@@ -1,6 +1,6 @@
 resource "aws_iam_role_policy" "letsencrypt" {
   name = "letsencrypt_policy"
-  role = "${aws_iam_role.letsencrypt.id}"
+  role = aws_iam_role.letsencrypt.id
 
   policy = <<EOF
 {
@@ -22,6 +22,7 @@ resource "aws_iam_role_policy" "letsencrypt" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role" "letsencrypt" {
@@ -43,9 +44,10 @@ resource "aws_iam_role" "letsencrypt" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_instance_profile" "letsencrypt" {
-  name = "letsencrypt"
-  role = "${aws_iam_role.letsencrypt.name}"
+name = "letsencrypt"
+role = aws_iam_role.letsencrypt.name
 }

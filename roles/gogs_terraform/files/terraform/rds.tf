@@ -3,7 +3,7 @@ variable "db_password" {
 }
 
 output "rds_name" {
-  value = "${aws_db_instance.gogs_maria.identifier}"
+  value = aws_db_instance.gogs_maria.identifier
 }
 
 resource "aws_db_instance" "gogs_maria" {
@@ -14,12 +14,12 @@ resource "aws_db_instance" "gogs_maria" {
   identifier             = "gogs"
   name                   = "gogs"
   username               = "root"
-  password               = "${var.db_password}"
+  password               = var.db_password
   skip_final_snapshot    = true
-  vpc_security_group_ids = ["${aws_security_group.allow_mysql.id}"]
+  vpc_security_group_ids = [aws_security_group.allow_mysql.id]
 
   lifecycle {
-    ignore_changes = ["password"]
+    ignore_changes = [password]
   }
 }
 
@@ -27,10 +27,12 @@ resource "aws_security_group" "allow_mysql" {
   name        = "allow_mysql"
   description = "Allow mysql"
 
+  revoke_rules_on_delete = false
+
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
+    cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   }
 }
