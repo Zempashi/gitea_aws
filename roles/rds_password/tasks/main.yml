@@ -4,7 +4,9 @@
     state: present
 
 - name: 'test root/credentials on dbs'
-  command: mariadb -u {{ db_username }} -h {{ gogs_mariadb.instance.endpoint }}
+  command: >-
+    mariadb -u {{ db_username }} -h {{ gogs_mariadb.instance.endpoint }}
+    -e "show databases;"
   register: mariadb_test_credential
   changed_when: False
   check_mode: False
