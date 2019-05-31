@@ -2,4 +2,4 @@ debug: False
 
 docker_service: docker
 
-docker_version: 18.03.0~ce-0~debian
+docker_version: 5:18.09.6~3-0~debian-stretch
